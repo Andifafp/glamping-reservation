@@ -163,6 +163,9 @@ class BookingSeeder extends Seeder
         $amount     = (int) round($booking->total_price * $percentage / 100);
         $processed  = $status !== Cancellation::STATUS_PENDING;
         $processedAt = $processed ? $requestedAt->copy()->addHours(mt_rand(2, 30)) : null;
+        if ($processedAt && $processedAt->gt(now())) {
+            $processedAt = now()->subMinutes(mt_rand(10, 120)); // jangan sampai di masa depan
+        }
 
         $cancellation = Cancellation::create([
             'booking_id'        => $booking->id,
