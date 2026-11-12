@@ -2,8 +2,104 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
 
+/*
+|--------------------------------------------------------------------------
+| Tema Bet Glamping: palet laut
+|--------------------------------------------------------------------------
+| Pakai sebagai kelas Tailwind biasa, contoh:
+|   bg-laut, text-palung, border-ombak, bg-buih, text-fajar
+|   font-display (judul), font-sans (teks)
+*/
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Young Serif', ui-serif, Georgia, serif;
+
+    --color-palung: #0B2A3C;     /* biru laut dalam: teks utama, footer */
+    --color-laut: #145C7A;       /* warna utama: tombol, tautan */
+    --color-laut-tua: #0F4A63;   /* hover tombol utama */
+    --color-ombak: #2A8FA6;      /* aksen, ikon, garis fokus */
+    --color-buih: #E8F3F5;       /* latar bagian terang */
+    --color-garam: #F7FBFC;      /* latar halaman */
+    --color-fajar: #F2B33D;      /* sorotan kecil: harga, asuransi */
+    --color-fajar-tua: #8A5A00;  /* teks di atas latar fajar */
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-garam font-sans text-palung antialiased;
+    }
+
+    h1, h2, h3 {
+        @apply font-display font-normal text-balance;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-ombak;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+        *, *::before, *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}
+
+@layer components {
+    /* Tombol: selalu pakai dua kelas, contoh class="btn btn-primary" */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+    }
+    .btn-primary {
+        @apply bg-laut text-white hover:bg-laut-tua;
+    }
+    .btn-secondary {
+        @apply border border-laut/30 bg-white text-laut hover:bg-buih;
+    }
+    .btn-light {
+        @apply bg-white text-palung hover:bg-buih;
+    }
+    .btn-danger {
+        @apply bg-red-700 text-white hover:bg-red-800;
+    }
+
+    /* Form */
+    .form-label {
+        @apply mb-1.5 block text-sm font-semibold text-palung;
+    }
+    .form-input {
+        @apply block w-full rounded-lg border border-palung/20 bg-white px-3.5 py-2.5 text-sm text-palung placeholder:text-palung/40 focus:border-ombak focus:ring-2 focus:ring-ombak/30 focus:outline-none;
+    }
+    .form-error {
+        @apply mt-1.5 text-sm text-red-700;
+    }
+    .form-hint {
+        @apply mt-1.5 text-sm text-palung/60;
+    }
+
+    /* Panel putih untuk form dan ringkasan */
+    .panel {
+        @apply rounded-2xl border border-palung/10 bg-white p-6 sm:p-8;
+    }
+
+    /* Isi artikel dari database (HTML) */
+    .prose-artikel h2 {
+        @apply mt-10 mb-3 text-2xl text-palung;
+    }
+    .prose-artikel p {
+        @apply mb-5 leading-8 text-palung/85;
+    }
+    .prose-artikel ul {
+        @apply mb-5 list-disc space-y-2 pl-6 leading-7 text-palung/85;
+    }
 }
