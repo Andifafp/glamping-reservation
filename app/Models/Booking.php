@@ -94,6 +94,18 @@ class Booking extends Model
     }
 
     /**
+     * Boleh diajukan pembatalan jika: sudah dibayar (confirmed), check-in belum lewat,
+     * dan tidak ada pengajuan pembatalan yang masih menunggu.
+     * Pastikan relasi latestCancellation sudah di-load agar tidak query berulang.
+     */
+    public function canBeCancelled(): bool
+    {
+        return $this->status === self::STATUS_CONFIRMED
+            && $this->check_in->isAfter(today())
+            && $this->latestCancellation?->status !== Cancellation::STATUS_PENDING;
+    }
+
+    /**
      * Persentase refund jika dibatalkan pada tanggal $requestedAt.
      * Aturan diambil dari config/glamping.php.
      */
