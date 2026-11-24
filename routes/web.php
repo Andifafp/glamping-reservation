@@ -5,7 +5,10 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Dashboard\ArticleController as DashboardArticleController;
+use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\RoomTypeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\RoomController;
@@ -68,6 +71,20 @@ Route::prefix('dashboard')
     ->group(function () {
         // Thoni: isi beranda dashboard (ringkasan, transaksi, grafik)
         Route::get('/', DashboardController::class)->name('index');
+
+        // Fais: kategori, jenis kamar, artikel
+        Route::resource('kategori', CategoryController::class)
+            ->except('show')
+            ->parameters(['kategori' => 'category'])
+            ->names('categories');
+        Route::resource('kamar', RoomTypeController::class)
+            ->except('show')
+            ->parameters(['kamar' => 'roomType'])
+            ->names('room-types');
+        Route::resource('artikel', DashboardArticleController::class)
+            ->except('show')
+            ->parameters(['artikel' => 'article'])
+            ->names('articles');
 
         // Hafiz: khusus admin
         Route::middleware('role:admin')->group(function () {
