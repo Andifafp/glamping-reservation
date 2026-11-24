@@ -5,12 +5,14 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CancellationController;
 use App\Http\Controllers\Dashboard\ArticleController as DashboardArticleController;
+use App\Http\Controllers\Dashboard\CancellationController as DashboardCancellationController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\RoomTypeController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 | Rute aplikasi Bet Glamping
 |--------------------------------------------------------------------------
 | NAMA rute (->name(...)) sudah dipakai di template, jangan diganti.
+| Versi ini sudah tidak memakai PreviewController.
 |
 | Middleware:
 |   'auth'              harus login
@@ -56,12 +59,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/reservasi/{booking:booking_code}/bayar', [BookingController::class, 'pay'])->name('booking.pay');
     Route::get('/reservasi/{booking:booking_code}/sukses', [BookingController::class, 'success'])->name('booking.success');
 
-    // Thoni: profil & pembatalan (TODO: ganti PreviewController)
-    Route::get('/profil', [PreviewController::class, 'profile'])->name('profile.index');
-    Route::get('/profil/ubah', [PreviewController::class, 'profileEdit'])->name('profile.edit');
-    Route::put('/profil', [PreviewController::class, 'notBuilt'])->name('profile.update');
-    Route::get('/reservasi/{booking:booking_code}/batal', [PreviewController::class, 'cancellationCreate'])->name('cancellations.create');
-    Route::post('/reservasi/{booking:booking_code}/batal', [PreviewController::class, 'notBuilt'])->name('cancellations.store');
+    // Thoni: profil & pembatalan
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profil/ubah', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/reservasi/{booking:booking_code}/batal', [CancellationController::class, 'create'])->name('cancellations.create');
+    Route::post('/reservasi/{booking:booking_code}/batal', [CancellationController::class, 'store'])->name('cancellations.store');
 });
 
 // ---------- Dashboard staff & admin ----------
@@ -71,6 +74,12 @@ Route::prefix('dashboard')
     ->group(function () {
         // Thoni: isi beranda dashboard (ringkasan, transaksi, grafik)
         Route::get('/', DashboardController::class)->name('index');
+
+        // Thoni: proses pembatalan
+        Route::get('/pembatalan', [DashboardCancellationController::class, 'index'])->name('cancellations.index');
+        Route::get('/pembatalan/{cancellation}', [DashboardCancellationController::class, 'show'])->name('cancellations.show');
+        Route::post('/pembatalan/{cancellation}/setujui', [DashboardCancellationController::class, 'approve'])->name('cancellations.approve');
+        Route::post('/pembatalan/{cancellation}/tolak', [DashboardCancellationController::class, 'reject'])->name('cancellations.reject');
 
         // Fais: kategori, jenis kamar, artikel
         Route::resource('kategori', CategoryController::class)
